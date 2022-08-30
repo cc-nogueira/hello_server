@@ -2,10 +2,10 @@ FROM dart:stable AS build
 
 # Resolve app dependencies.
 WORKDIR /app
-COPY pubspec.* ./
+COPY app/pubspec.* ./
 RUN dart pub get
 
-COPY lib/main.dart .
+COPY app/lib/main.dart .
 RUN mkdir bin && dart compile exe main.dart -o bin/server
 
 # Build minimal serving image from AOT-compiled `/bin/server` and required system
