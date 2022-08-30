@@ -5,17 +5,21 @@
 - Docker configuration with dart AOT compilation (generates a tiny eficient executable)  
 - Kubernetes configuration  
 
-### To run this application localy:
-> dart app/lib/main.dart   
+### To run this application localy (with optional port):
+> dart app/lib/main.dart [--port=8080]
 
-### To run in Docker:
+### Or run localy a compiled executable (with optional port):
+> dart compile exe ./app/lib/main.dart -o ./app/bin/server.exe
+> ./app/bin/server.exe [--port=8080]
+
+### To run in Docker (with specific local port mapped to executable default port):
 > docker build -f docker/Dockerfile -t hello-dart:latest .  
 > docker run --name hello-dart --rm -p 5000:5000 hello-dart:latest  
 
 ### To stop in Docker launch:
 > docker kill --signal=SIGINT hello-dart   
 
-### To run in Kubernetes after building the docker image:
+### To run in Kubernetes after building the docker image (using same mapping as docker run):
 > kubectl apply -f kubernetes/deployment.yaml   
 
 ### On docker image update kubernetes roll out updates:
