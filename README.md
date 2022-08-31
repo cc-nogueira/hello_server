@@ -1,41 +1,81 @@
 # A Hello Dart Docker service and Kubernetes
 
+
 ### A simple example HTTP with Docker and Kubernetes:  
-- HTTP server using dart shelf lib listening on defaul port 5000 (overridable with args and env variable)  
+- HTTP server using dart shelf lib listening on defaul port 8080 (overridable with args and env variable)  
 - Docker configuration with dart AOT compilation (generates a tiny eficient executable)  
 - Kubernetes configuration  
 
-### To run this application localy (with optional port):
+
+# Running the sample
+
+## Running with the Dart SDK
+
+You can run the example with the [Dart SDK](https://dart.dev/get-dart)
+like this (may use optional argument --port=8080):
+
 ```shell
-$ dart app/lib/main.dart [--port=8080]
+$ dart run app/lib/server.dart
+Server listening on port 8080
 ```
 
-### Or run localy a compiled executable (with optional port):
+
+## Running with AOT compiled executable
+
+
+Running with a compiled executable:
 ```shell
-$ dart compile exe ./app/lib/main.dart -o ./app/bin/server.exe
-$ ./app/bin/server.exe [--port=8080]
+$ dart compile exe ./app/lib/server.dart -o ./bin/server # server.exe for windows
+$ ./bin/server
+Server listening on port 8080
 ```
 
-### Run in Docker (with specific local port mapped to executable default port):
+
+## Running with Docker
+
+If you have [Docker Desktop](https://www.docker.com/get-started) installed, you
+can build and run with the `docker` command:
+
 ```shell
-$ docker build -f docker/Dockerfile -t hello-dart:latest .  
-$ docker run --name hello-dart --rm -p 5000:5000 hello-dart:latest  
+$ docker build . -f docker/Dockerfile -t hello-server
+$ docker run --name hello-server --rm -it -p 8080:8080 hello-server
+Server listening on port 8080
 ```
 
-### Stop in Docker launch:
+To stop either hit Ctrl+C or from a second terminal:
 ```shell
-$ docker kill --signal=SIGINT hello-dart   
+$ docker kill --signal=SIGINT hello-server
 ```
 
-### Run in Kubernetes after building the docker image (using same mapping as docker run):
+
+## Run in Kubernetes
+After building the docker image (using same mapping as docker run):
 ```shell
 $ kubectl apply -f kubernetes/deployment.yaml   
 ```
 
-### On docker image update kubernetes roll out updates:
+To roll out an updated docker image:
 ```shell
-$ kubectl rollout restart deployment hello-dart  
+$ kubectl rollout restart deployment hello-server  
 ```
+
+
+## Testing
+
+From a second terminal:
+```shell
+$ curl http://localhost:8080
+Hello, World!
+$ curl http://localhost:8080/echo/I_love_Dart
+I_love_Dart
+```
+
+You should see the logging printed in the first terminal:
+```shell
+2021-05-06T15:47:04.620417  0:00:00.000158 GET     [200] /
+2021-05-06T15:47:08.392928  0:00:00.001216 GET     [200] /echo/I_love_Dart
+```
+
 
 ### References:  
 
@@ -47,11 +87,6 @@ $ kubectl rollout restart deployment hello-dart
 
 - **Docker CLI**  
   https://docs.docker.com/engine/reference/run/  
-
-- **Functions Framework for Dart**  
-  Good insigths on how to define the minimalistic docker image for AOT compiled DART  
-  https://github.com/GoogleCloudPlatform/functions-framework-dart/tree/main/docs  
-  https://github.com/GoogleCloudPlatform/functions-framework-dart/blob/main/examples/hello/Dockerfile  
 
 - **Get started with Kubernetes (using Python)**  
   From 2019: Very clear step by step  
